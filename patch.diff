@@ -1,0 +1,74 @@
+diff --git a/core/src/main/java/de/robv/android/xposed/XposedInit.java b/core/src/main/java/de/robv/android/xposed/XposedInit.java
+index 6cd49140..17ee9913 100644
+--- a/core/src/main/java/de/robv/android/xposed/XposedInit.java
++++ b/core/src/main/java/de/robv/android/xposed/XposedInit.java
+@@ -260,7 +260,7 @@ public final class XposedInit {
+         var count = 0;
+         for (var moduleClassName : moduleClassNames) {
+             try {
+-                Log.i(TAG, "  Loading class " + moduleClassName);
++                // Log.i(TAG, "  Loading class " + moduleClassName);
+ 
+                 Class<?> moduleClass = mcl.loadClass(moduleClassName);
+ 
+@@ -301,7 +301,7 @@ public final class XposedInit {
+      * in <code>assets/xposed_init</code>.
+      */
+     private static boolean loadModule(String name, String apk, PreLoadedApk file) {
+-        Log.i(TAG, "Loading legacy module " + name + " from " + apk);
++        // Log.i(TAG, "Loading legacy module " + name + " from " + apk);
+ 
+         var sb = new StringBuilder();
+         var abis = Process.is64Bit() ? Build.SUPPORTED_64_BIT_ABIS : Build.SUPPORTED_32_BIT_ABIS;
+diff --git a/daemon/src/main/java/org/lsposed/lspd/service/ConfigManager.java b/daemon/src/main/java/org/lsposed/lspd/service/ConfigManager.java
+index c2e1a3fe..c8c00cae 100644
+--- a/daemon/src/main/java/org/lsposed/lspd/service/ConfigManager.java
++++ b/daemon/src/main/java/org/lsposed/lspd/service/ConfigManager.java
+@@ -1142,25 +1142,6 @@ public class ConfigManager {
+ 
+     public List<String> getDenyListPackages() {
+         List<String> result = new ArrayList<>();
+-        if (!getApi().equals("Zygisk")) return result;
+-        try (final SQLiteDatabase magiskDb =
+-                     SQLiteDatabase.openDatabase(ConfigFileManager.magiskDbPath, new SQLiteDatabase.OpenParams.Builder().addOpenFlags(SQLiteDatabase.OPEN_READONLY).build())) {
+-            try (Cursor cursor = magiskDb.query("settings", new String[]{"value"}, "`key`=?", new String[]{"denylist"}, null, null, null)) {
+-                if (!cursor.moveToNext()) return result;
+-                int valueIndex = cursor.getColumnIndex("value");
+-                if (valueIndex >= 0 && cursor.getInt(valueIndex) == 0) return result;
+-            }
+-            try (Cursor cursor = magiskDb.query(true, "denylist", new String[]{"package_name"}, null, null, null, null, null, null, null)) {
+-                if (cursor == null) return result;
+-                int packageNameIdx = cursor.getColumnIndex("package_name");
+-                while (cursor.moveToNext()) {
+-                    result.add(cursor.getString(packageNameIdx));
+-                }
+-                return result;
+-            }
+-        } catch (Throwable e) {
+-            Log.e(TAG, "get denylist", e);
+-        }
+         return result;
+     }
+ 
+diff --git a/daemon/src/main/jni/logcat.cpp b/daemon/src/main/jni/logcat.cpp
+index c8021286..1d22f3d3 100644
+--- a/daemon/src/main/jni/logcat.cpp
++++ b/daemon/src/main/jni/logcat.cpp
+@@ -291,7 +291,7 @@ void Logcat::Run() {
+     RefreshFd(true);
+     RefreshFd(false);
+ 
+-    EnsureLogWatchDog();
++    // EnsureLogWatchDog();
+ 
+     while (true) {
+         std::unique_ptr<logger_list, decltype(&android_logger_list_free)> logger_list{
+@@ -318,7 +318,7 @@ void Logcat::Run() {
+             if (modules_print_count_ >= kMaxLogSize) [[unlikely]] RefreshFd(false);
+         }
+ 
+-        OnCrash(errno);
++        // OnCrash(errno);
+     }
+ }
+ 
